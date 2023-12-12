@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="favicon.ico">
+  <title>Battery</title>
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'css/simplebar.css')}}">
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'css/feather.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename = 'css/daterangepicker.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static', filename = 'css/app-dark.css')}}" id="darkTheme" disabled>
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'css/app-light.css')}}" id="lightTheme">
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <!-- find the latest library and style versions here: https://www.mapbox.com/mapbox-gl-js/api/ -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+  <style>
+   .marker{
+  background-image: url('static/assets/images/gifgif200.gif');
+  border-radius: 10%;
+  background-size: cover;
+  width: 25px;
+  height: 25px;
+  cursor:pointer;
+  padding:0;
+}   
+.mapboxgl-popup{
+  max-width:100%;
+}
+.mapboxgl-popup-content{
+  text-align:center;
+  font-family:'Open Sans',sans-serif;
+}
+    </style>
+</head>
+ <body class="vertical  light"> 
+  <div class="wrapper">
+      <!--왼쪽상단바-->
+      <nav class="topnav navbar navbar-light">
+        <button type="button" class="navbar-toggler text-muted mt-2 p-0 mr-3 collapseSidebar">
+          <i class="fe fe-menu navbar-toggler-icon"></i>
+        </button>
+        <form class="form-inline mr-auto searchform text-muted">
+          <input class="form-control mr-sm-2 bg-transparent border-0 pl-4 text-muted" type="search" placeholder="Type something..." aria-label="Search">
+        </form>
+        <ul class="nav">
+        <li class="nav-item">
+            <!-- 시계 시작 -->
+          	<div style="font-size:23px; margin-top:5%" id="clock"></div>
+          	<!-- 시계 끝 -->
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-muted my-2" href="#" id="modeSwitcher" data-mode="light">
+              <i class="fe fe-sun fe-16"></i>
+            </a>
+          </li>
+          <li class="nav-item nav-notif">
+            <a class="nav-link text-muted my-2" href="./#" data-toggle="modal" data-target=".modal-notif">
+              <span class="fe fe-bell fe-16"></span>
+              <span class="dot dot-md bg-fail"></span>
+            </a>
+          </li>
+          <li class="nav-item nav-notif">
+            <a class="nav-link text-muted my-2" href="./#" data-toggle="modal" data-target=".modal-notif">
+              <span class="fe fe-user fe-16"></span>
+              <span class="dot dot-md bg-success"></span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      
+      <!-- 사이드바 -->
+      <aside class="sidebar-left border-right bg-white shadow" id="leftSidebar" data-simplebar>
+        <a href="#" class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3" data-toggle="toggle">
+          <i class="fe fe-x"><span class="sr-only"></span></i>
+        </a>
+
+        <!-- Side bar -->
+        <nav class="vertnav navbar navbar-light">
+          <!-- nav bar -->
+          <div class="w-100 mb-4 d-flex">
+            <a class="navbar-brand mx-auto mt-2 flex-fill text-center" href="/">
+              <svg version="1.1" id="logo" class="navbar-brand-img brand-sm" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 120 120" xml:space="preserve">
+                <g>
+                  <polygon class="st0" points="78,105 15,105 24,87 87,87    " />
+                  <polygon class="st0" points="96,69 33,69 42,51 105,51    " />
+                  <polygon class="st0" points="78,33 15,33 24,15 87,15    " />
+                </g>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Dashboard 버튼 -->
+          <ul class="navbar-nav flex-fill w-100 mb-2">  
+            <li class="nav-item w-100">
+              <a class="nav-link" href="/">
+                <i class="fe fe-home fe-16"></i>
+                <span class="ml-3 item-text">Dashboard</span>
+              </a>
+            </li>
+          </ul>        
+
+
+          <!-- Process 버튼 -->
+          <p class="text-muted nav-heading mt-4 mb-1">
+            <span>Components</span>
+          </p>
+          <!-- Process - Monitoring 버튼 -->
+          <ul class="navbar-nav flex-fill w-100 mb-2">
+            <li class="nav-item dropdown">
+              <a href="#ui-elements" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle nav-link">
+                <i class="fe fe-box fe-16"></i>
+                <span class="ml-3 item-text">Process</span>
+              </a>
+              <ul class="collapse list-unstyled pl-4 w-100" id="ui-elements">
+                <li class="nav-item">
+                  <a class="nav-link pl-3" href="/Monitoring"><span class="ml-1 item-text">Monitoring</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link pl-3" href="/Simulation"><span class="ml-1 item-text">Simulation</span></a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+
+          <!-- Statistics 버튼 -->
+          <ul class="navbar-nav flex-fill w-100 mb-2">  
+            <li class="nav-item w-100">
+              <a class="nav-link" href="/Statistics">
+                <i class="fe fe-credit-card fe-16"></i>
+                <span class="ml-3 item-text">Statistics</span>
+              </a>
+            </li>
+          </ul> 
+
+          <!-- User-Input-Data 버튼 -->
+          <ul class="navbar-nav flex-fill w-100 mb-2">  
+            <li class="nav-item w-100">
+              <a class="nav-link" href="/UserInputData">
+                <i class="fe fe-grid fe-16"></i>
+                <span class="ml-3 item-text">UserInputData</span>
+              </a>
+            </li>
+          </ul>
+
+        </nav>
+      </aside>
+      <!-- 사이드바 End -->
+
+
+      <!-- Main Page -->
+      <main role="main" class="main-content">
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+            <div class="col-12">
+
+              <!-- widgets -->
+              <div class="row my-4">
+                <div class="col-md-3">
+                	<div class="card shadow mb-4 mt-3" >
+                		<div class="card-header">
+                      		<strong>제품명</strong>
+                    	</div>
+                    	<div class="card-body">
+                    		<div style="font-size:23px; padding: 1rem;">{{resent_data.Model}}</div>
+                    	</div>
+                	</div>
+              </div>
+                <div class="col-md-2" style="padding-top:2.5rem">
+                  <div>
+                    <div>
+                      <strong class="mb-1" style="font-size: 20px; color: rgb(117, 113, 113);">
+                        금일 총 검사량</strong>
+                    </div>
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col" id="ctnumber_parent">
+                          <div class="card-title" id="ctnumber">1</div>
+                          <div class="card-title" id="ctnumber_c">,</div>
+                          <div class="card-title" id="ctnumber">8</div>
+                          <div class="card-title" id="ctnumber">5</div>
+                          <div class="card-title" id="ctnumber">0</div>
+                        </div>
+                      </div> <!-- /. row -->
+                    </div> <!-- /. card-body -->
+                  </div> <!-- /. card -->
+                </div> 
+
+                <div class="col-md-2" style="padding-top:2.5rem">
+                  <div>
+                    <div style="padding-left: 10px;">
+                      <strong class="mb-1" style="font-size: 20px; color: rgb(117, 113, 113);">
+                        금일 총 양품량</strong>
+                    </div>
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col" id="ctnumber_parent"   style="padding-left: 20px;">
+                          <div class="card-title" id="ctnumber">1</div>
+                          <div class="card-title" id="ctnumber_c">,</div>
+                          <div class="card-title" id="ctnumber">8</div>
+                          <div class="card-title" id="ctnumber">0</div>
+                          <div class="card-title" id="ctnumber">0</div>
+                        </div>
+                      </div> <!-- /. row -->
+                    </div> <!-- /. card-body -->
+                  </div> <!-- /. card -->
+                </div> 
+
+                <div class="col-md-2" style="padding-top:2.5rem">
+                  <div>
+                    <div style="padding-left: 10px;">
+                      <strong class="mb-1" style="font-size: 20px; color: rgb(117, 113, 113);">
+                        금일 총 불량품량</strong>
+                    </div>
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col" id="ctnumber_parent" style="padding-left: 20px;">
+                          <div class="card-title" id="ctnumber">0</div>
+                          <div class="card-title" id="ctnumber_c">,</div>
+                          <div class="card-title" id="ctnumber">0</div>
+                          <div class="card-title" id="ctnumber">5</div>
+                          <div class="card-title" id="ctnumber">0</div>
+                        </div>
+                      </div> <!-- /. row -->
+                    </div> <!-- /. card-body -->
+                  </div> <!-- /. card -->
+                </div>
+                <div class="col-md-3">
+                	<div class="card shadow mb-4 mt-3"> 
+                		<div class="card-header">
+                      		<strong>공장 총 가동시간</strong>
+                    	</div>
+                    	<div class="card-body">
+                    	<div style="font-size:23px; padding: 1rem;">
+                    	{{resent_data.Result_dateGap}}
+                    	</div>
+                    	</div>
+                    </div>
+                </div>
+                
+              </div>
+
+				<!-- 첫번째컬럼 -->
+              <div class="row">
+                <!-- 불량률 그래프 -->
+                <div class="col-md-3" >
+                  <div class="card shadow mb-43"> 
+                    <div class="card-header">
+                      <strong>불량률</strong>
+                    </div>
+                    <div class="card-body" >                     
+                      <div id="halfdonut" ></div>
+                    </div>                   
+                  </div>
+                  <!-- 불량률  그래프 -->
+                  
+                  <!-- 공정별 판단 -->
+                  <div class="card shadow mb-4 mt-3">
+                  <div class="card-header">
+                      <strong>공정별 판단</strong>
+                    </div>
+                    <div class="card-body">
+                    	<table class="table table-bordered table-hover mb-0">
+                    	<tr>
+                    	<td></td>
+                    	<td>가로공정</td>
+                    	<td>세로공정</td>
+                    	</tr>
+                    	<tr>
+                    	<td>능력평가</td>
+                    	<td>
+{% if hCp_data >= 2 %}
+ 탁월
+{% elif hCp_data < 2 and hCp_data >= 1.67 %}
+매우 우수
+{% elif (hCp_data < 1.67 and hCp_data >= 1.33)%}
+우수
+{% elif (hCp_data < 1.33 and hCp_data >= 1)%}
+ 보통
+{% elif (hCp_data < 1 and hCp_data >= 0.67)%}
+저조
+{% elif (hCp_data < 0.67 and hCp_data >= 0.33)%}
+불량
+{% else %}
+매우불량
+{% endif %}
+
+						</td>
+						<td>
+{% if vCp_data >= 2 %}
+ 탁월
+{% elif vCp_data < 2 and vCp_data >= 1.67 %}
+매우 우수
+{% elif (vCp_data < 1.67 and vCp_data >= 1.33)%}
+우수
+{% elif (vCp_data < 1.33 and vCp_data >= 1)%}
+ 보통
+{% elif (vCp_data < 1 and vCp_data >= 0.67)%}
+저조
+{% elif (vCp_data < 0.67 and vCp_data >= 0.33)%}
+불량
+{% else %}
+매우불량
+{% endif %}
+						</td>
+                    	</tr>
+                    	<tr>
+                    	<td>개선사항</td>
+                    	<td>{{resent_data.Hadjust}}</td>
+                    	<td>{{resent_data.Vadjust}}</td>
+                    	</tr>
+                    	</table>
+                    
+                    </div>
+                                    
+                  </div>
+                
+                </div>  <!-- 공정별 판단 -->
+
+                
+                <!-- 지도 -->
+                <div class="col-md-6">
+                  <div class="card shadow eq-card  mb-4">
+                    <div class="card-body">
+                      <div id='map' style="width:100%; height:100%;"></div>
+                    </div>
+                  </div>
+                </div> <!-- .col -->
+                <!-- 지도 -->
+				
+                <!-- 3분단 -->
+                <div class="col-md-3">
+                
+                  <!--오늘날씨 -->
+                  <div class="card shadow mb-4" style="margin-bottom: 6%;">
+                  <div class="card-header">
+                      <strong>검사 목표</strong>
+                    </div>
+                    <div class="card-body" style="padding:1.8rem 1rem;">
+                      <div class="row" >
+                        <div class="col-4 text-center mb-3">
+                          <p class="mb-1 small text-muted">목표량</p>
+                          <span class="h3">{{resent_data.Result_LOT}}개</span><br />
+                          <span class="small text-muted">+20%</span>
+                          <span class="fe fe-arrow-up text-success fe-12"></span>
+                        </div>
+                        <div class="col-4 text-center mb-3">
+                          <p class="mb-1 small text-muted">가로규격</p>
+                          <span class="h3">{{resent_data.hStandard}}cm</span><br />
+                          <span class="small text-muted">+2%</span>
+                          <span class="fe fe-arrow-up text-success fe-12"></span>
+                        </div>
+                        <div class="col-4 text-center mb-3">
+                          <p class="mb-1 small text-muted">세로규격</p>
+                          <span class="h3">{{resent_data.vStandard}}cm</span><br />
+                          <span class="small text-muted">-2%</span>
+                          <span class="fe fe-arrow-down text-danger fe-12"></span>
+                        </div>
+                      </div>
+                    </div> <!-- .card-body -->     
+                               
+                  </div>
+                  <!-- 오늘날씨 -->
+                  
+                  <!-- 검사결과 -->
+                  <div class="card shadow mb-4"  style="position: relative;">
+                    <div class="card-header">
+                      <strong>검사 결과</strong>
+                    </div>
+                    <div class="card-body" style="padding:1.8rem 1rem;">
+                      <div class="row" >
+                        <div class="col-4 text-center mb-3">
+                          <p class="mb-1 small text-muted">가로불량</p>
+                          <span class="h3">{{resent_data.hunpassCount}}개</span><br />
+                          <span class="small text-muted">+20%</span>
+                          <span class="fe fe-arrow-up text-success fe-12"></span>
+                        </div>
+                        <div class="col-4 text-center mb-3">
+                          <p class="mb-1 small text-muted">세로불량</p>
+                          <span class="h3">{{resent_data.vunpassCount}}개</span><br />
+                          <span class="small text-muted">+6%</span>
+                          <span class="fe fe-arrow-up text-success fe-12"></span>
+                        </div>
+                        <div class="col-4 text-center mb-3">
+                          <p class="mb-1 small text-muted">가로/세로 불량</p>
+                          <span class="h3">{{resent_data.TotalunpassCount}}개</span><br />
+                          <span class="small text-muted">-2%</span>
+                          <span class="fe fe-arrow-down text-danger fe-12"></span>
+                        </div>
+                      </div>
+                    </div> 
+                  </div> <!-- 검사결과 -->
+                  
+                </div> <!-- 3분단 -->
+                
+              </div><!--1번째 컬럼 -->
+              
+                <div class="row">
+                <!-- 박스플롯 그래프 시작 -->
+                <div class="col-md-3" >
+                  <div class="card shadow mb-43" style="margin-top:4%"> 
+                    <div class="card-header">
+						<strong>공정별 치수 그래프</strong>
+                    </div>
+                    <div class="card-body">
+						<div id="chartdiv" style='height:300px'></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- 박스플롯 그래프 끝 -->
+                
+                <!-- 움직이는 막대 그래프 시작 -->
+                <div class="col-md-6" >
+                  <div class="card shadow mb-4" style="margin-top:2%"> 
+                    <div class="card-header">
+						<strong>날짜별 검사량 그래프</strong>
+                    </div>
+                    <div class="card-body" >
+                    	<div id="movechart" style='height:300px'></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- 움직이는 막대 그래프 끝 -->
+                
+                <!-- 정규분포 그래프 시작 -->
+                <div class="col-md-3" >
+                  <div class="card shadow mb-43" style="margin-top:4%"> 
+                    <div class="card-header">
+						<strong>공정능력지수 그래프</strong>
+                    </div>
+                    <div class="card-body" >
+                    	<div id="areachart" style='height:300px'></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- 정규분포 그래프 끝 -->
+                
+              </div>
+            </div> <!-- /.col -->
+        </div> <!-- .container-fluid -->
+        
+        
+        <div class="modal fade modal-notif modal-slide" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="defaultModalLabel">Notifications</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="list-group list-group-flush my-n3">
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-box fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Package has uploaded successfull</strong></small>
+                        <div class="my-0 text-muted small">Package is zipped and uploaded</div>
+                        <small class="badge badge-pill badge-light text-muted">1m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-download fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Widgets are updated successfull</strong></small>
+                        <div class="my-0 text-muted small">Just create new layout Index, form, table</div>
+                        <small class="badge badge-pill badge-light text-muted">2m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-inbox fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Notifications have been sent</strong></small>
+                        <div class="my-0 text-muted small">Fusce dapibus, tellus ac cursus commodo</div>
+                        <small class="badge badge-pill badge-light text-muted">30m ago</small>
+                      </div>
+                    </div> <!-- / .row -->
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-link fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Link was attached to menu</strong></small>
+                        <div class="my-0 text-muted small">New layout has been attached to the menu</div>
+                        <small class="badge badge-pill badge-light text-muted">1h ago</small>
+                      </div>
+                    </div>
+                  </div> <!-- / .row -->
+                </div> <!-- / .list-group -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Clear All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade modal-shortcut modal-slide" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="defaultModalLabel">Shortcuts</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body px-5">
+                <div class="row align-items-center">
+                  <div class="col-6 text-center">
+                    <div class="squircle bg-success justify-content-center">
+                      <i class="fe fe-cpu fe-32 align-self-center text-white"></i>
+                    </div>
+                    <p>Control area</p>
+                  </div>
+                  <div class="col-6 text-center">
+                    <div class="squircle bg-primary justify-content-center">
+                      <i class="fe fe-activity fe-32 align-self-center text-white"></i>
+                    </div>
+                    <p>Activity</p>
+                  </div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-6 text-center">
+                    <div class="squircle bg-primary justify-content-center">
+                      <i class="fe fe-droplet fe-32 align-self-center text-white"></i>
+                    </div>
+                    <p>Droplet</p>
+                  </div>
+                  <div class="col-6 text-center">
+                    <div class="squircle bg-primary justify-content-center">
+                      <i class="fe fe-upload-cloud fe-32 align-self-center text-white"></i>
+                    </div>
+                    <p>Upload</p>
+                  </div>
+                </div>
+                <div class="row align-items-center">
+                  <div class="col-6 text-center">
+                    <div class="squircle bg-primary justify-content-center">
+                      <i class="fe fe-users fe-32 align-self-center text-white"></i>
+                    </div>
+                    <p>Users</p>
+                  </div>
+                  <div class="col-6 text-center">
+                    <div class="squircle bg-primary justify-content-center">
+                      <i class="fe fe-settings fe-32 align-self-center text-white"></i>
+                    </div>
+                    <p>Settings</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main> <!-- main -->
+    </div> <!-- .wrapper -->
+
+
+	<script src="{{ url_for('static', filename='js/jquery.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/popper.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/moment.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/simplebar.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/daterangepicker.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.stickOnScroll.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/tinycolor-min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/config.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/d3.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/topojson.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/datamaps.all.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/datamaps-zoomto.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/datamaps.custom.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/Chart.min.js')}}"></script>
+	<script>
+      /* defind global options */
+      Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
+      Chart.defaults.global.defaultFontColor = colors.mutedColor;
+    </script>
+	<script src="{{ url_for('static', filename='js/gauge.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.sparkline.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/apexcharts.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/apexcharts.custom.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/apps.js')}}"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
+
+
+
+<script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag()
+      {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'UA-56159088-1');
+</script>
+    
+
+<!-- 시계 시작 -->
+<script>
+
+var clockTarget = document.getElementById("clock");
+
+function clock() {
+    var date = new Date();
+
+    // date Object를 받아오고 
+    var month = date.getMonth();
+
+    // 달을 받아옵니다 
+    var clockDate = date.getDate();
+
+    // 몇일인지 받아옵니다 
+    var day = date.getDay();
+
+    // 요일을 받아옵니다. 
+    var week = ['일', '월', '화', '수', '목', '금', '토'];
+
+    // 요일은 숫자형태로 리턴되기때문에 미리 배열을 만듭니다. 
+    var hours = date.getHours();
+
+    // 시간을 받아오고 
+    var minutes = date.getMinutes();
+
+    // 분도 받아옵니다.
+    var seconds = date.getSeconds();
+
+    // 초까지 받아온후 
+    clockTarget .innerText = `${month+1}월 ${clockDate}일 ${week[day]}요일` +
+
+    `${hours < 10 ? `0${hours}` : hours}:${minutes < 10 ? `0${minutes }`  : minutes }:${seconds < 10 ? `0${seconds }`  : seconds }`;
+
+    // 월은 0부터 1월이기때문에 +1일을 해주고 
+
+    // 시간 분 초는 한자리수이면 시계가 어색해보일까봐 10보다 작으면 앞에0을 붙혀주는 작업을 3항연산으로 했습니다. 
+}
+
+function init() {
+
+clock();
+
+// 최초에 함수를 한번 실행시켜주고 
+setInterval(clock, 1000);
+
+// setInterval이라는 함수로 매초마다 실행을 해줍니다.
+
+// setInterval은 첫번째 파라메터는 함수이고 두번째는 시간인데 밀리초단위로 받습니다. 1000 = 1초 
+
+}
+init();
+</script>
+<!--시계 끝-->
+    
+<!-- 지도 시작 -->
+<script>
+
+
+
+mapboxgl.accessToken = 'pk.eyJ1IjoieW03NTk2IiwiYSI6ImNrM3RzOWUwcjA2NjIza28xNnJ2M3o1MHEifQ.S9fhUbLn3OteuK7AQJTPbw';
+
+  var geojson ={
+    'type': 'FeatureCollection',
+    'features':[
+      {
+        'type':'Feature',
+        'properties':{
+            'message':'가산디지털단지 공장',
+            'iconSize':[60,60]
+        },
+        'geometry':{
+          'type':'Point',
+          'coordinates':[126.8783882,37.4666103]
+        }
+      },
+      {
+    'type': 'Feature',
+      'properties': {
+        'message': '충청도 공장',
+        'iconSize': [40, 40]
+        },
+        'geometry': {
+        'type': 'Point',
+        'coordinates': [129.347969,36.091722]
+        }
+      },
+      {
+    'type': 'Feature',
+      'properties': {
+        'message': '제주도 공장',
+        'iconSize': [40, 40]
+        },
+        'geometry': {
+        'type': 'Point',
+        'coordinates': [126.545424,33.379944]
+        }
+      }
+    ]
+  }
+  var start = [126.67,35.43];  //가산좌표
+var end = [126.545424,33.379944];
+var map = new mapboxgl.Map({
+container: 'map',
+style: 'mapbox://styles/mapbox/outdoors-v11',  //satellite-streets-v11
+center: start,
+zoom:5.5
+
+});
+
+
+
+
+geojson.features.forEach(function (marker){
+  var el = document.createElement('div');
+  el.className = 'marker';
+  
+  new mapboxgl.Marker(el)
+        .setLngLat(marker.geometry.coordinates)
+        .setPopup(new mapboxgl.Popup({offset:40}).setText(marker.properties.message))
+        .addTo(map)
+        
+});
+
+
+var arr = [];
+arr[0] = [126.8783882,37.4666103];
+arr[1] = [126.545424,33.379944];
+arr[2] = [129.347969,36.091722];
+var num = 0;
+
+var test2 = function(){
+ // alert(num);
+  map.flyTo({
+    
+      center:start,
+      zoom:5,
+      bearing:0,
+      speed:1,
+      curve:1,
+  
+    });
+    essential : true
+  
+}
+
+ setInterval(function(){
+  map.flyTo({center:arr[num],
+              zoom:15,
+              curve:2
+              });
+  num++;
+if(num>arr.length-1){
+  num=0;
+}
+setTimeout(() => {
+      test2();
+    }, 8000);
+    
+},18000);
+
+
+</script>
+  
+<!-- 지도 끝 end -->
+  
+<!-- 웹 페이지 크기 및 위치 자동 고정하기 -->
+<script>
+window.onfocus=function(){
+}
+window.onload=function(){
+ window.focus(); // 현재 window 즉 익스플러러를 윈도우 최상단에 위치
+window.moveTo(0,0); // 웹 페이지의 창 위치를 0,0 (왼쪽 최상단) 으로 고정
+window.resizeTo(1280,800); // 웹페이지의 크기를 가로 1280 , 세로 800 으로 고정(확장 및 축소)
+window.scrollTo(0,250); // 페이지 상단 광고를 바로 볼 수 있게 스크롤 위치를 조정
+}
+</script>
+
+<!-- Resources -->
+<script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/dataviz.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/frozen.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/kelly.js"></script>
+
+
+<!-- 막대차트 시작 -->
+ <script>
+am4core.ready(function() {
+
+// Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+
+
+var chart = am4core.create('chartdiv', am4charts.XYChart)
+chart.colors.step = 2;
+
+chart.legend = new am4charts.Legend()
+chart.legend.position = 'top'
+chart.legend.paddingBottom = 20
+chart.legend.labels.template.maxWidth = 95
+
+var xAxis = chart.xAxes.push(new am4charts.CategoryAxis())
+xAxis.dataFields.category = 'category'
+xAxis.renderer.cellStartLocation = 0.1
+xAxis.renderer.cellEndLocation = 0.9
+xAxis.renderer.grid.template.location = 0;
+
+var yAxis = chart.yAxes.push(new am4charts.ValueAxis());
+yAxis.min = 0;
+
+function createSeries(value, name) {
+    var series = chart.series.push(new am4charts.ColumnSeries())
+    series.dataFields.valueY = value
+    series.dataFields.categoryX = 'category'
+    series.name = name
+
+    series.events.on("hidden", arrangeColumns);
+    series.events.on("shown", arrangeColumns);
+
+    var bullet = series.bullets.push(new am4charts.LabelBullet())
+    bullet.interactionsEnabled = false
+    bullet.dy = 30;
+    bullet.label.text = '{valueY}'
+    bullet.label.fill = am4core.color('#ffffff')
+
+    return series;
+}
+
+chart.data = [
+    {
+        category: '삼성sdi',
+        first: 7,
+        second: 8,
+        third: 2
+    },
+    {
+        category: 'lg화학',
+        first: 6,
+        second: 8,
+        third: 3
+    },
+    {
+        category: '{{resent_data.Model}}',
+        first: {{resent_data.hunpassCount}},
+        second: {{resent_data.vunpassCount}},
+        third: {{resent_data.TotalunpassCount}}
+    }
+]
+
+
+createSeries('first', '가로');
+createSeries('second', '세로');
+createSeries('third', '가로/세로');
+
+function arrangeColumns() {
+
+    var series = chart.series.getIndex(0);
+
+    var w = 1 - xAxis.renderer.cellStartLocation - (1 - xAxis.renderer.cellEndLocation);
+    if (series.dataItems.length > 1) {
+        var x0 = xAxis.getX(series.dataItems.getIndex(0), "categoryX");
+        var x1 = xAxis.getX(series.dataItems.getIndex(1), "categoryX");
+        var delta = ((x1 - x0) / chart.series.length) * w;
+        if (am4core.isNumber(delta)) {
+            var middle = chart.series.length / 2;
+
+            var newIndex = 0;
+            chart.series.each(function(series) {
+                if (!series.isHidden && !series.isHiding) {
+                    series.dummyData = newIndex;
+                    newIndex++;
+                }
+                else {
+                    series.dummyData = chart.series.indexOf(series);
+                }
+            })
+            var visibleCount = newIndex;
+            var newMiddle = visibleCount / 2;
+
+            chart.series.each(function(series) {
+                var trueIndex = chart.series.indexOf(series);
+                var newIndex = series.dummyData;
+
+                var dx = (newIndex - trueIndex + middle - newMiddle) * delta
+
+                series.animate({ property: "dx", to: dx }, series.interpolationDuration, series.interpolationEasing);
+                series.bulletsContainer.animate({ property: "dx", to: dx }, series.interpolationDuration, series.interpolationEasing);
+            })
+        }
+    }
+}
+
+}); // end am4core.ready()
+</script>
+<!--막대차트 끝-->
+
+<!-- 정규분포그래프 시작 -->
+<script>
+am4core.ready(function() {
+
+// Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+var chart = am4core.create("areachart", am4charts.XYChart);
+chart.hiddenState.properties.opacity = 0; // this makes initial fade in effect
+
+chart.data = [ {
+  "country": "Cp",
+  "value1": {{resent_data.hCp}},
+  "value2": {{resent_data.vCp}}
+}];
+
+var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+categoryAxis.renderer.grid.template.location = 0;
+categoryAxis.dataFields.category = "country";
+categoryAxis.renderer.minGridDistance = 40;
+
+var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+var series = chart.series.push(new am4charts.CurvedColumnSeries());
+series.dataFields.categoryX = "country";
+
+series.dataFields.valueY = "value1";
+series.tooltipText = "{valueY.value}"
+series.columns.template.strokeOpacity = 0;
+series.clustered = false;
+series.hiddenState.properties.visible = true; // this is added in case legend is used and first series is hidden.
+
+var series2 = chart.series.push(new am4charts.CurvedColumnSeries());
+series2.dataFields.categoryX = "country";
+
+series2.dataFields.valueY = "value2";
+series2.tooltipText = "{valueY.value}"
+series2.columns.template.strokeOpacity = 0;
+series2.clustered = false;
+
+var series3 = chart.series.push(new am4charts.CurvedColumnSeries());
+series3.dataFields.categoryX = "country";
+
+series3.dataFields.valueY = "value3";
+series3.tooltipText = "{valueY.value}"
+series3.columns.template.strokeOpacity = 0;
+series3.clustered = false;
+
+chart.cursor = new am4charts.XYCursor();
+chart.cursor.maxTooltipDistance = 0;
+
+chart.scrollbarX = new am4core.Scrollbar();
+
+
+series.dataItems.template.adapter.add("width", (width, target) => {
+  return am4core.percent(target.valueY / valueAxis.max * 100);
+})
+
+series2.dataItems.template.adapter.add("width", (width, target) => {
+  return am4core.percent(target.valueY / valueAxis.max * 100);
+})
+
+series3.dataItems.template.adapter.add("width", (width, target) => {
+  return am4core.percent(target.valueY / valueAxis.max * 100);
+})
+
+series.columns.template.events.on("parentset", function(event){
+  event.target.zIndex = valueAxis.max - event.target.dataItem.valueY;
+})
+
+series2.columns.template.events.on("parentset", function(event){
+  event.target.parent = series.columnsContainer;
+  event.target.zIndex = valueAxis.max - event.target.dataItem.valueY;  
+})
+
+series3.columns.template.events.on("parentset", function(event){
+  event.target.parent = series.columnsContainer;
+  event.target.zIndex = valueAxis.max - event.target.dataItem.valueY;  
+})
+
+
+
+
+}); // end am4core.ready()
+</script>
+<!-- 정규분포그래프 끝 -->
+
+<!-- 움직이는 막대그래프 시작 -->
+<script>
+am4core.ready(function() {
+
+// Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+var chart = am4core.create("movechart", am4charts.XYChart);
+chart.padding(40, 40, 40, 40);
+
+chart.numberFormatter.bigNumberPrefixes = [
+  { "number": 1e+3, "suffix": "K" },
+  { "number": 1e+6, "suffix": "M" },
+  { "number": 1e+9, "suffix": "B" }
+];
+
+var label = chart.plotContainer.createChild(am4core.Label);
+label.x = am4core.percent(97);
+label.y = am4core.percent(95);
+label.horizontalCenter = "right";
+label.verticalCenter = "middle";
+label.dx = -15;
+label.fontSize = 50;
+
+var playButton = chart.plotContainer.createChild(am4core.PlayButton);
+playButton.x = am4core.percent(97);
+playButton.y = am4core.percent(95);
+playButton.dy = -2;
+playButton.verticalCenter = "middle";
+playButton.events.on("toggled", function(event) {
+  if (event.target.isActive) {
+    play();
+  }
+  else {
+    stop();
+  }
+})
+
+var stepDuration = 4000;
+
+var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+categoryAxis.renderer.grid.template.location = 0;
+categoryAxis.dataFields.category = "network";
+categoryAxis.renderer.minGridDistance = 1;
+categoryAxis.renderer.inversed = true;
+categoryAxis.renderer.grid.template.disabled = true;
+
+var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+valueAxis.min = 0;
+valueAxis.rangeChangeEasing = am4core.ease.linear;
+valueAxis.rangeChangeDuration = stepDuration;
+valueAxis.extraMax = 0.1;
+
+var series = chart.series.push(new am4charts.ColumnSeries());
+series.dataFields.categoryY = "network";
+series.dataFields.valueX = "MAU";
+series.tooltipText = "{valueX.value}"
+series.columns.template.strokeOpacity = 0;
+series.columns.template.column.cornerRadiusBottomRight = 5;
+series.columns.template.column.cornerRadiusTopRight = 5;
+series.interpolationDuration = stepDuration;
+series.interpolationEasing = am4core.ease.linear;
+
+var labelBullet = series.bullets.push(new am4charts.LabelBullet())
+labelBullet.label.horizontalCenter = "right";
+labelBullet.label.text = "{values.valueX.workingValue.formatNumber('#.0as')}";
+labelBullet.label.textAlign = "end";
+labelBullet.label.dx = -10;
+
+chart.zoomOutButton.disabled = true;
+
+// as by default columns of the same series are of the same color, we add adapter which takes colors from chart.colors color set
+series.columns.template.adapter.add("fill", function(fill, target){
+  return chart.colors.getIndex(target.dataItem.index);
+});
+
+var day = 1101;
+label.text = day.toString();
+
+var interval;
+
+function play() {
+  interval = setInterval(function(){
+    nextDay();
+  }, stepDuration)
+  nextDay();
+}
+
+function stop() {
+  if (interval) {
+    clearInterval(interval);
+  }
+}
+
+function nextDay() {
+  day++
+
+  if (day > 1116) {
+    day = 1101;
+  }
+
+  var newData = allData[day];
+  var itemsWithNonZero = 0;
+  for (var i = 0; i < chart.data.length; i++) {
+    chart.data[i].MAU = newData[i].MAU;
+    if (chart.data[i].MAU > 0) {
+      itemsWithNonZero++;
+    }
+  }
+
+  if (day == 1101) {
+    series.interpolationDuration = stepDuration / 4;
+    valueAxis.rangeChangeDuration = stepDuration / 4;
+  }
+  else {
+    series.interpolationDuration = stepDuration;
+    valueAxis.rangeChangeDuration = stepDuration;
+  }
+
+  chart.invalidateRawData();
+  label.text = day.toString();
+
+  categoryAxis.zoom({ start: 0, end: itemsWithNonZero / categoryAxis.dataItems.length });
+}
+
+
+categoryAxis.sortBySeries = series;
+
+var allData = {
+  "1101": [
+    {
+      "network": "Facebook",
+      "MAU": 0
+    },
+    {
+      "network": "Flickr",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+
+    {
+      "network": "Friendster",
+      "MAU": 4470000
+    },
+    {
+      "network": "Google+",
+      "MAU": 0
+    },
+    {
+      "network": "Hi5",
+      "MAU": 0
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 0
+    },
+    {
+      "network": "Orkut",
+      "MAU": 0
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 0
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 0
+    },
+    {
+      "network": "Twitter",
+      "MAU": 0
+    },
+    {
+      "network": "WeChat",
+      "MAU": 0
+    },
+    {
+      "network": "Weibo",
+      "MAU": 0
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 0
+    }
+  ],
+  "1102": [
+    {
+      "network": "Facebook",
+      "MAU": 0
+    },
+    {
+      "network": "Flickr",
+      "MAU": 3675135
+    },
+    {
+      "network": "Friendster",
+      "MAU": 5970054
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+    {
+      "network": "Google+",
+      "MAU": 0
+    },
+    {
+      "network": "Hi5",
+      "MAU": 0
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 980036
+    },
+    {
+      "network": "Orkut",
+      "MAU": 4900180
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 0
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 0
+    },
+    {
+      "network": "Twitter",
+      "MAU": 0
+    },
+    {
+      "network": "WeChat",
+      "MAU": 0
+    },
+    {
+      "network": "Weibo",
+      "MAU": 0
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 0
+    }
+  ],
+  "1103": [
+    {
+      "network": "Facebook",
+      "MAU": 0
+    },
+    {
+      "network": "Flickr",
+      "MAU": 7399354
+    },
+    {
+      "network": "Friendster",
+      "MAU": 7459742
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+    {
+      "network": "Google+",
+      "MAU": 0
+    },
+    {
+      "network": "Hi5",
+      "MAU": 9731610
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 19490059
+    },
+    {
+      "network": "Orkut",
+      "MAU": 9865805
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 0
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 0
+    },
+    {
+      "network": "Twitter",
+      "MAU": 0
+    },
+    {
+      "network": "WeChat",
+      "MAU": 0
+    },
+    {
+      "network": "Weibo",
+      "MAU": 0
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 1946322
+    }
+  ],
+  "1104": [
+    {
+      "network": "Facebook",
+      "MAU": 0
+    },
+    {
+      "network": "Flickr",
+      "MAU": 14949270
+    },
+    {
+      "network": "Friendster",
+      "MAU": 8989854
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+    {
+      "network": "Google+",
+      "MAU": 0
+    },
+    {
+      "network": "Hi5",
+      "MAU": 19932360
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 54763260
+    },
+    {
+      "network": "Orkut",
+      "MAU": 14966180
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 248309
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 0
+    },
+    {
+      "network": "Twitter",
+      "MAU": 0
+    },
+    {
+      "network": "WeChat",
+      "MAU": 0
+    },
+    {
+      "network": "Weibo",
+      "MAU": 0
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 19878248
+    }
+  ],
+  "1105": [
+    {
+      "network": "Facebook",
+      "MAU": 0
+    },
+    {
+      "network": "Flickr",
+      "MAU": 29299875
+    },
+    {
+      "network": "Friendster",
+      "MAU": 24253200
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+    {
+      "network": "Google+",
+      "MAU": 0
+    },
+    {
+      "network": "Hi5",
+      "MAU": 29533250
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 69299875
+    },
+    {
+      "network": "Orkut",
+      "MAU": 26916562
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 488331
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 0
+    },
+    {
+      "network": "Twitter",
+      "MAU": 0
+    },
+    {
+      "network": "WeChat",
+      "MAU": 0
+    },
+    {
+      "network": "Weibo",
+      "MAU": 0
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 143932250
+    }
+  ],
+  "1106": [
+    {
+      "network": "Facebook",
+      "MAU": 100000000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 30000000
+    },
+    {
+      "network": "Friendster",
+      "MAU": 51008911
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+    {
+      "network": "Google+",
+      "MAU": 0
+    },
+    {
+      "network": "Hi5",
+      "MAU": 55045618
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 72408233
+    },
+    {
+      "network": "Orkut",
+      "MAU": 44357628
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 1944940
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 0
+    },
+    {
+      "network": "Twitter",
+      "MAU": 0
+    },
+    {
+      "network": "WeChat",
+      "MAU": 0
+    },
+    {
+      "network": "Weibo",
+      "MAU": 0
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 294493950
+    }
+  ],
+  "1107": [
+    {
+      "network": "Facebook",
+      "MAU": 276000000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 41834525
+    },
+    {
+      "network": "Friendster",
+      "MAU": 28804331
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+    {
+      "network": "Google+",
+      "MAU": 0
+    },
+    {
+      "network": "Hi5",
+      "MAU": 57893524
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 70133095
+    },
+    {
+      "network": "Orkut",
+      "MAU": 47366905
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 3893524
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 0
+    },
+    {
+      "network": "Twitter",
+      "MAU": 0
+    },
+    {
+      "network": "WeChat",
+      "MAU": 0
+    },
+    {
+      "network": "Weibo",
+      "MAU": 0
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 413611440
+    }
+  ],
+  "1108": [
+    {
+      "network": "Facebook",
+      "MAU": 517750000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 54708063
+    },
+    {
+      "network": "Friendster",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 166029650
+    },
+    {
+      "network": "Google+",
+      "MAU": 0
+    },
+    {
+      "network": "Hi5",
+      "MAU": 59953290
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 68046710
+    },
+    {
+      "network": "Orkut",
+      "MAU": 49941613
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 0
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 0
+    },
+    {
+      "network": "Twitter",
+      "MAU": 43250000
+    },
+    {
+      "network": "WeChat",
+      "MAU": 0
+    },
+    {
+      "network": "Weibo",
+      "MAU": 19532900
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 480551990
+    }
+  ],
+  "1109": [
+    {
+      "network": "Facebook",
+      "MAU": 766000000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 66954600
+    },
+    {
+      "network": "Friendster",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 170000000
+    },
+    {
+      "network": "Google+",
+      "MAU": 0
+    },
+    {
+      "network": "Hi5",
+      "MAU": 46610848
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 46003536
+    },
+    {
+      "network": "Orkut",
+      "MAU": 47609080
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 0
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 0
+    },
+    {
+      "network": "Twitter",
+      "MAU": 92750000
+    },
+    {
+      "network": "WeChat",
+      "MAU": 47818400
+    },
+    {
+      "network": "Weibo",
+      "MAU": 48691040
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 642669824
+    }
+  ],
+  "1110": [
+    {
+      "network": "Facebook",
+      "MAU": 979750000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 79664888
+    },
+    {
+      "network": "Friendster",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 170000000
+    },
+    {
+      "network": "Google+",
+      "MAU": 107319100
+    },
+    {
+      "network": "Hi5",
+      "MAU": 0
+    },
+    {
+      "network": "Instagram",
+      "MAU": 0
+    },
+    {
+      "network": "MySpace",
+      "MAU": 0
+    },
+    {
+      "network": "Orkut",
+      "MAU": 45067022
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 0
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 146890156
+    },
+    {
+      "network": "Twitter",
+      "MAU": 160250000
+    },
+    {
+      "network": "WeChat",
+      "MAU": 118123370
+    },
+    {
+      "network": "Weibo",
+      "MAU": 79195730
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 0
+    },
+    {
+      "network": "YouTube",
+      "MAU": 844638200
+    }
+  ],
+  "1111": [
+    {
+      "network": "Facebook",
+      "MAU": 1170500000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 80000000
+    },
+    {
+      "network": "Friendster",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 170000000
+    },
+    {
+      "network": "Google+",
+      "MAU": 205654700
+    },
+    {
+      "network": "Hi5",
+      "MAU": 0
+    },
+    {
+      "network": "Instagram",
+      "MAU": 117500000
+    },
+    {
+      "network": "MySpace",
+      "MAU": 0
+    },
+    {
+      "network": "Orkut",
+      "MAU": 0
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 0
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 293482050
+    },
+    {
+      "network": "Twitter",
+      "MAU": 223675000
+    },
+    {
+      "network": "WeChat",
+      "MAU": 196523760
+    },
+    {
+      "network": "Weibo",
+      "MAU": 118261880
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 300000000
+    },
+    {
+      "network": "YouTube",
+      "MAU": 1065223075
+    }
+  ],
+  "1112": [
+    {
+      "network": "Facebook",
+      "MAU": 1334000000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 0
+    },
+    {
+      "network": "Friendster",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 170000000
+    },
+    {
+      "network": "Google+",
+      "MAU": 254859015
+    },
+    {
+      "network": "Hi5",
+      "MAU": 0
+    },
+    {
+      "network": "Instagram",
+      "MAU": 250000000
+    },
+    {
+      "network": "MySpace",
+      "MAU": 0
+    },
+    {
+      "network": "Orkut",
+      "MAU": 0
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 135786956
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 388721163
+    },
+    {
+      "network": "Twitter",
+      "MAU": 223675000
+    },
+    {
+      "network": "WeChat",
+      "MAU": 444232415
+    },
+    {
+      "network": "Weibo",
+      "MAU": 154890345
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 498750000
+    },
+    {
+      "network": "YouTube",
+      "MAU": 1249451725
+    }
+  ],
+  "1113": [
+    {
+      "network": "Facebook",
+      "MAU": 1516750000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 0
+    },
+    {
+      "network": "Friendster",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 170000000
+    },
+    {
+      "network": "Google+",
+      "MAU": 298950015
+    },
+    {
+      "network": "Hi5",
+      "MAU": 0
+    },
+    {
+      "network": "Instagram",
+      "MAU": 400000000
+    },
+    {
+      "network": "MySpace",
+      "MAU": 0
+    },
+    {
+      "network": "Orkut",
+      "MAU": 0
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 0
+    },
+    {
+      "network": "Reddit",
+      "MAU": 163346676
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 475923363
+    },
+    {
+      "network": "Twitter",
+      "MAU": 304500000
+    },
+    {
+      "network": "WeChat",
+      "MAU": 660843407
+    },
+    {
+      "network": "Weibo",
+      "MAU": 208716685
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 800000000
+    },
+    {
+      "network": "YouTube",
+      "MAU": 1328133360
+    }
+  ],
+  "1114": [
+    {
+      "network": "Facebook",
+      "MAU": 1753500000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 0
+    },
+    {
+      "network": "Friendster",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+    {
+      "network": "Google+",
+      "MAU": 398648000
+    },
+    {
+      "network": "Hi5",
+      "MAU": 0
+    },
+    {
+      "network": "Instagram",
+      "MAU": 550000000
+    },
+    {
+      "network": "MySpace",
+      "MAU": 0
+    },
+    {
+      "network": "Orkut",
+      "MAU": 0
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 143250000
+    },
+    {
+      "network": "Reddit",
+      "MAU": 238972480
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 238648000
+    },
+    {
+      "network": "TikTok",
+      "MAU": 0
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 565796720
+    },
+    {
+      "network": "Twitter",
+      "MAU": 314500000
+    },
+    {
+      "network": "WeChat",
+      "MAU": 847512320
+    },
+    {
+      "network": "Weibo",
+      "MAU": 281026560
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 1000000000
+    },
+    {
+      "network": "YouTube",
+      "MAU": 1399053600
+    }
+  ],
+  "1115": [
+    {
+      "network": "Facebook",
+      "MAU": 2035750000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 0
+    },
+    {
+      "network": "Friendster",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+    {
+      "network": "Google+",
+      "MAU": 495657000
+    },
+    {
+      "network": "Hi5",
+      "MAU": 0
+    },
+    {
+      "network": "Instagram",
+      "MAU": 750000000
+    },
+    {
+      "network": "MySpace",
+      "MAU": 0
+    },
+    {
+      "network": "Orkut",
+      "MAU": 0
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 195000000
+    },
+    {
+      "network": "Reddit",
+      "MAU": 297394200
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 239142500
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 593783960
+    },
+    {
+      "network": "Twitter",
+      "MAU": 328250000
+    },
+    {
+      "network": "WeChat",
+      "MAU": 921742750
+    },
+    {
+      "network": "Weibo",
+      "MAU": 357569030
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 1333333333
+    },
+    {
+      "network": "YouTube",
+      "MAU": 1495657000
+    }
+  ],
+  "1116": [
+    {
+      "network": "Facebook",
+      "MAU": 2255250000
+    },
+    {
+      "network": "Flickr",
+      "MAU": 0
+    },
+    {
+      "network": "Friendster",
+      "MAU": 0
+    },
+    {
+      "network": "Google Buzz",
+      "MAU": 0
+    },
+    {
+      "network": "Google+",
+      "MAU": 430000000
+    },
+    {
+      "network": "Hi5",
+      "MAU": 0
+    },
+    {
+      "network": "Instagram",
+      "MAU": 1000000000
+    },
+    {
+      "network": "MySpace",
+      "MAU": 0
+    },
+    {
+      "network": "Orkut",
+      "MAU": 0
+    },
+    {
+      "network": "Pinterest",
+      "MAU": 246500000
+    },
+    {
+      "network": "Reddit",
+      "MAU": 355000000
+    },
+    {
+      "network": "Snapchat",
+      "MAU": 0
+    },
+    {
+      "network": "TikTok",
+      "MAU": 500000000
+    },
+    {
+      "network": "Tumblr",
+      "MAU": 624000000
+    },
+    {
+      "network": "Twitter",
+      "MAU": 329500000
+    },
+    {
+      "network": "WeChat",
+      "MAU": 1000000000
+    },
+    {
+      "network": "Weibo",
+      "MAU": 431000000
+    },
+    {
+      "network": "Whatsapp",
+      "MAU": 1433333333
+    },
+    {
+      "network": "YouTube",
+      "MAU": 1900000000
+    }
+  ]
+}
+
+chart.data = JSON.parse(JSON.stringify(allData[day]));
+categoryAxis.zoom({ start: 0, end: 1 / chart.data.length });
+
+series.events.on("inited", function() {
+  setTimeout(function() {
+    playButton.isActive = true; // this starts interval
+  }, 2000)
+})
+
+}); // end am4core.ready()
+</script>
+<!-- 움직이는 막대그래프 끝 -->
+
+<!-- 불량률 그래프 시작 -->
+<script>
+am4core.ready(function() {
+
+// Themes begin
+am4core.useTheme(am4themes_frozen);
+// Themes end
+
+// Create chart instance
+var chart = am4core.create("halfdonut", am4charts.PieChart);
+
+// Set data
+var selected;
+var types = [{
+  type: "양품",
+  percent: 100-{{resent_data.hDefectrate}}-{{resent_data.vDefectrate}}-{{resent_data.TotalDefectrate}},
+  color: chart.colors.getIndex(0)
+  }, {
+  type: "불량품",
+  percent: {{resent_data.hDefectrate}}+{{resent_data.vDefectrate}}+{{resent_data.TotalDefectrate}},
+  color: chart.colors.getIndex(1),
+  subs: [{
+    type: "가로",
+    percent: {{resent_data.hDefectrate}}
+  }, {
+    type: "세로",
+    percent: {{resent_data.vDefectrate}}
+  }, {
+    type: "가로/세로",
+    percent: {{resent_data.TotalDefectrate}}
+  }]
+}];
+
+// Add data
+chart.data = generateChartData();
+
+// Add and configure Series
+var pieSeries = chart.series.push(new am4charts.PieSeries());
+pieSeries.dataFields.value = "percent";
+pieSeries.dataFields.category = "type";
+pieSeries.slices.template.propertyFields.fill = "color";
+pieSeries.slices.template.propertyFields.isActive = "pulled";
+pieSeries.slices.template.strokeWidth = 0;
+
+function generateChartData() {
+  var chartData = [];
+  for (var i = 0; i < types.length; i++) {
+    if (i == selected) {
+      for (var x = 0; x < types[i].subs.length; x++) {
+        chartData.push({
+          type: types[i].subs[x].type,
+          percent: types[i].subs[x].percent,
+          color: types[i].color,
+          pulled: true
+        });
+      }
+    } else {
+      chartData.push({
+        type: types[i].type,
+        percent: types[i].percent,
+        color: types[i].color,
+        id: i
+      });
+    }
+  }
+  return chartData;
+}
+
+pieSeries.slices.template.events.on("hit", function(event) {
+  if (event.target.dataItem.dataContext.id != undefined) {
+    selected = event.target.dataItem.dataContext.id;
+  } else {
+    selected = undefined;
+  }
+  chart.data = generateChartData();
+});
+
+}); // end am4core.ready()
+</script>
+<!-- 불량률 그래프 끝 -->
+
+</body>
+</html>
